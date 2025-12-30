@@ -2,9 +2,9 @@ const chatBox = document.getElementById("chatBox");
 const input = document.getElementById("msg");
 const ctx = document.getElementById("dataChart").getContext("2d");
 
-/* =======================
-   Chart Initialization
-======================= */
+
+  // Chart Initialization
+
 const dataChart = new Chart(ctx, {
   type: "line",
   data: {
@@ -20,9 +20,9 @@ const dataChart = new Chart(ctx, {
   }
 });
 
-/* =======================
-   UI Helpers
-======================= */
+
+  // UI Helpers
+
 async function addMessage(html, type) {
   const div = document.createElement("div");
   div.className = "message " + type;
@@ -39,9 +39,9 @@ function handleKey(e) {
   if (e.key === "Enter") send();
 }
 
-/* =======================
-   Text Parsing for Plot
-======================= */
+
+   //Text Parsing for Plot
+
 function extractPlotFromText(text) {
   try {
     // Extract all arrays like: varname = [values]
@@ -83,9 +83,9 @@ function extractPlotFromText(text) {
   }
 }
 
-/* =======================
-   Plot Function
-======================= */
+
+  // Plot Function
+
 function plotXY(plot) {
   if (!plot || !plot.datasets) return;
 
@@ -109,9 +109,9 @@ function plotXY(plot) {
   dataChart.update();
 }
 
-/* =======================
-   Main Send Function
-======================= */
+
+   //Main Send Function
+
 async function send() {
   const msg = input.value.trim();
   if (!msg) return;
