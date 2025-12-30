@@ -9,12 +9,7 @@ const dataChart = new Chart(ctx, {
   type: "line",
   data: {
     labels: [],
-    datasets: [{
-      label: "",
-      data: [],
-      borderWidth: 2,
-      tension: 0.3
-    }]
+    datasets: []
   },
   options: {
     responsive: true,
@@ -49,21 +44,40 @@ function handleKey(e) {
 ======================= */
 function extractPlotFromText(text) {
   try {
-    // Extract Y values
-    const yMatch = text.match(/temperature\s*=\s*\[([^\]]+)\]/i);
-    if (!yMatch) return null;
-    const y = yMatch[1].split(",").map(n => Number(n.trim()));
+    // Extract all arrays like: varname = [values]
+    const arrayMatches = text.match(/(\w+)\s*=\s*\[([^\]]+)\]/g);
+    if (!arrayMatches) return null;
 
-    // Extract X and Y labels
+    const datasets = [];
+
+    arrayMatches.forEach(item => {
+      const parts = item.match(/(\w+)\s*=\s*\[([^\]]+)\]/);
+      if (!parts) return;
+
+      const label = parts[1].trim();
+      const values = parts[2].split(",").map(n => Number(n.trim()));
+
+      // Skip X, include all others (voltage, temperature, etc.)
+      if (label.toLowerCase() !== "x") {
+        datasets.push({ label, values });
+      }
+    });
+
+    if (datasets.length === 0) return null;
+
+    // Extract X values if provided
+    const xMatch = text.match(/x\s*=\s*\[([^\]]+)\]/i);
+    const x = xMatch
+      ? xMatch[1].split(",").map(n => Number(n.trim()))
+      : Array.from({ length: datasets[0].values.length }, (_, i) => i + 1);
+
+    // Optional axis labels
     const xLabelMatch = text.match(/x_label\s*=\s*([^\n]+)/i);
     const yLabelMatch = text.match(/y_label\s*=\s*([^\n]+)/i);
+    const xLabel = xLabelMatch ? xLabelMatch[1].trim() : "X";
+    const yLabel = yLabelMatch ? yLabelMatch[1].trim() : "Y";
 
-    return {
-      x: Array.from({ length: y.length }, (_, i) => i + 1),
-      y: y,
-      xLabel: xLabelMatch ? xLabelMatch[1].trim() : "X",
-      yLabel: yLabelMatch ? yLabelMatch[1].trim() : "Y"
-    };
+    return { x, datasets, xLabel, yLabel };
   } catch {
     return null;
   }
@@ -73,14 +87,25 @@ function extractPlotFromText(text) {
    Plot Function
 ======================= */
 function plotXY(plot) {
-  if (!plot || !plot.y) return;
+  if (!plot || !plot.datasets) return;
 
+  // Update labels and datasets
   dataChart.data.labels = plot.x;
-  dataChart.data.datasets[0].data = plot.y;
-  dataChart.data.datasets[0].label = plot.yLabel || "Y";
+  dataChart.data.datasets = plot.datasets.map(ds => ({
+    label: ds.label,
+    data: ds.values,
+    borderWidth: 2,
+    tension: 0.3
+  }));
+
+  // Update axis labels dynamically and ensure display
+  dataChart.options.scales.x.title.display = true;
   dataChart.options.scales.x.title.text = plot.xLabel || "X";
+
+  dataChart.options.scales.y.title.display = true;
   dataChart.options.scales.y.title.text = plot.yLabel || "Y";
 
+  // Force Chart.js to apply updates
   dataChart.update();
 }
 

@@ -9,7 +9,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-OPENROUTER_API_KEY = os.getenv("CHATBOTAPI")
+OPENROUTER_API_KEY = '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'
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
 if not OPENROUTER_API_KEY:
