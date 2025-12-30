@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FUNDABOT Dashboard </title>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="chat-container">
+    <h2>FUNDABOT</h2>
+    <div class="chat-box" id="chatBox"></div>
+    <div class="input-area">
+      <input id="msg" placeholder="Type your message..." onkeydown="handleKey(event)" />
+      <button onclick="send()">Send</button>
+    </div>
+  </div>
+
+  <div class="graph-container">
+    <h2>Data Plot</h2>
+    <canvas id="dataChart"></canvas>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
